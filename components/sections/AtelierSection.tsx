@@ -48,9 +48,9 @@ export const AtelierSection = () => {
           <Accordion title="About the Space" defaultOpen={false}>
             <div className="space-y-4 text-sm leading-relaxed text-gray-600 md:text-base">
               <p>
-                The atelier is more than a salon—it's a studio where hair becomes art.
+                The atelier is more than a salon—it&apos;s a studio where hair becomes art.
                 Located in the heart of Ghent, the space reflects the same architectural
-                minimalism that defines Gilles' work.
+                minimalism that defines Gilles&apos; work.
               </p>
               <p>
                 Every detail is considered: from the natural light that floods the space
@@ -58,7 +58,7 @@ export const AtelierSection = () => {
                 environment is designed to inspire both artist and client.
               </p>
               <p>
-                Sustainability and quality are at the core of the atelier's philosophy,
+                Sustainability and quality are at the core of the atelier&apos;s philosophy,
                 using only the finest organic products that respect both hair and
                 environment.
               </p>
