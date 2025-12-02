@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --border: 0 0% 89.8%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
   --grey-light: #f7f7f7;
   --grey-medium: #e6e6e6;
 }

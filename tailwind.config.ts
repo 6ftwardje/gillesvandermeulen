@@ -9,8 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#ffffff',
-        foreground: '#000000',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        border: 'hsl(var(--border))',
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
         grey: {
           light: '#f7f7f7',
           medium: '#e6e6e6',
