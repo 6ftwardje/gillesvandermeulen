@@ -1,0 +1,209 @@
+You are building and iterating on a premium, minimal, highly visual website for hair artist Gilles Vandermeulen (Ghent). All design and code decisions must respect the following creative direction and structure.
+
+High-Level Tech Stack
+
+Use Next.js (App Router) with TypeScript as the primary framework.
+
+Use TailwindCSS for all styling.
+
+Use Framer Motion for animations and transitions.
+
+Use a smooth scrolling solution (e.g. Lenis) where asked to implement smooth scroll / inertia.
+
+Prefer headless CMS integration (e.g. Sanity) for galleries and content when relevant; design data structures with this in mind (series, hero assets, copy blocks).
+
+Host assumptions should fit well with Vercel (e.g. use next/image, optimize for performance but prioritize clarity of code).
+
+Brand & Visual Direction
+
+Always implement UI/UX in line with this brand:
+
+Overall vibe:
+
+Contemporary urban, architecturaal, strak.
+
+High-end fashion / studio feeling, not “barbershop”.
+
+Emotie op homepage:
+
+Mix van urban minimalism en artistiek atelier, maar vertaald naar attitude in typografie en compositie (niet grunge of gritty textures).
+
+Typography:
+
+Architectural & clean, with attitude via typography.
+
+Use a clean grotesk setup (e.g. “GT America / Neue Haas”-achtige stijl): bold/condensed for headings, regular/medium for body.
+
+Layout and font choices moeten aanvoelen als editorial / fashion, niet corporate.
+
+Color:
+
+Basis: zwart / wit als primair palet.
+
+Gebruik subtiele grijstinten (#f7f7f7, #e6e6e6) voor background blocks.
+
+Accentkleuren mogen later toegevoegd worden; structuur moet dit toestaan, maar voeg pas accent-colors toe als expliciet gevraagd.
+
+Photography:
+
+Grote, hoogwaardige studiofoto’s met modellen, in één consistente stijl.
+
+Gebruik grote foto-blokken, asymmetrische composities en editorial spreads.
+
+Hero en gallery zijn model-only (geen Gilles in hero), face-forward, met attitude.
+
+Lichte edits zoals lichte grain, monochrome varianten en creatieve crops zijn oké in de visuele taal, maar code-wise blijft de implementatie neutraal (styling en layout laten dit toe).
+
+Layout & UX Principles
+
+Grid & structure:
+
+Gebruik een strak, architecturaal grid (bijv. 12 kolommen) en veel whitespace (ruime margins en padding).
+
+Asymmetrisch, maar elegant:
+
+Gebruik asymmetrische layouts die “strong unexpected” zijn, zonder visuele chaos.
+
+Maximaal één duidelijke “grid break” per section om rust te bewaren.
+
+Hero:
+
+Homepage start met een fullscreen hero.
+
+Gebruik 3 hero-beelden in een rotating sequence (langzame, zachte overgang).
+
+Initieel is dit een foto-setup, maar implementeer de structuur zodanig dat later eenvoudig een video-variant kan worden toegevoegd (bijv. via een prop of configuratie).
+
+Hero tekst minimaal:
+
+Naam: “GILLES VANDERMEULEN”
+
+Subline klein: “Hair Artist – Ghent”
+
+Eventuele scroll-indicator: minimalistisch (lijn/icoon, geen grote tekst).
+
+Navigation:
+
+Voorlopig simple nav: minimalistische navigatie, beperkte links (bijv. Home, Work, About, Atelier, Prices, Booking).
+
+Houd de implementatie uitbreidbaar: makkelijke toevoeging van items, variants (sticky, overlay) in de toekomst.
+
+Sections / Page Flow (single-page or main layout):
+
+HeroSection
+
+Fullscreen slideshow met 3 modellen-beelden.
+
+Minimal text overlay, responsive, met goede focus states voor eventuele CTA’s.
+
+StatementSection
+
+Korte, krachtige copy (1–2 zinnen) als typografische compositie.
+
+Asymmetrische layout: groot beeld + kleiner beeld met tekstblok op onverwachte plek.
+
+AboutSection
+
+Minimal zichtbare content: kort, krachtig statement en foto van Gilles.
+
+Uitklapbare SEO-block met langere tekst:
+
+Gebruik een accordion of expandable panel met duidelijke ARIA-attributes.
+
+Tekststijl: high-end, editorial, geen marketingfluff.
+
+GallerySection
+
+Opgezet in 3 series, elk met een eigen naam (bijv. “Series I — …”).
+
+Elke serie bestaat uit een reeks afbeeldingen in editorial spreads, niet in standaard masonry:
+
+Meestal 2–6 beelden per serie.
+
+Afwisselende ratio’s, asymmetrische layouts met veel witruimte.
+
+Bouw de componenten zo dat series gemakkelijk via data-config (bijv. arrays) beheerbaar zijn.
+
+AtelierSection (De Biokapper / “Where I create”)
+
+Architecturaal gevoel: foto(’s) van de ruimte en focus op “studio”, niet op “klassiek salon”.
+
+Kort zichtbare tekst; aanvullende informatie (producten, organic, locatie) kan in een uitklapbare SEO-block.
+
+Toon adres subtiel (bijv. onderaan de section).
+
+PricesSection
+
+Toon alle categorieën, maar subtiel:
+
+Gebruik uitklapbare categorieën (bijv. “Cut – Men”, “Cut – Women”, “Color”, “Add-ons”).
+
+Prijzen in kleine, cleane typografie; vermijd tabellen die er “budget” uitzien.
+
+Code moet alle prijzen uit de aangeleverde content kunnen representeren.
+
+BookingSection
+
+Embed de Salonkee widget in een rustige, clean container.
+
+Bied een korte, rustige titel/intro (bijv. “Book your session”).
+
+Geen overbodige CTA’s of afleiding rond de booking.
+
+FooterSection
+
+Ultra minimal:
+
+Naam, adres, Instagram-link, eventueel toekomstige digitale signature.
+
+Geen complexe navigatie; simpel en rustig.
+
+Animations & Motion
+
+Gebruik Framer Motion voor:
+
+Fades, slides, staggered reveals.
+
+Directional motion: beelden en tekst bewegen subtiel vanuit tegengestelde richtingen (bijv. beeld van links, tekst van rechts).
+
+Gebruik smooth scrolling (bijv. Lenis) waar gevraagd:
+
+Geen over-the-top parallax; subtiel, cinematic gevoel.
+
+Animaties:
+
+Langzaam, elegant, geen bouncy easing.
+
+Vermijd drukke, flashy effecten; altijd premium, editorial.
+
+SEO & Content Behavior
+
+SEO is belangrijk, maar visueel minimal:
+
+Gebruik uitklapbare tekstblokken voor langere content (About, Atelier, eventueel extra uitleg).
+
+Zorg dat deze SEO-content wel in de DOM staat en toegankelijk is, ook als het collapsed is (let op ARIA en semantiek).
+
+Schrijf of integreer copy in lijn met een high-end fashion editorial tone:
+
+Korte zichtbare zinnen (Apple-like), langere storytelling alleen in hidden/expanded blocks.
+
+Component & Code Style for This Project
+
+Gebruik semantische componenten, bv.:
+
+HeroSection, StatementSection, AboutSection, GallerySection, GallerySeries, AtelierSection, PricesSection, BookingSection, FooterSection.
+
+Houd componenten small, composable en data-driven:
+
+Series, images, teksten en prijzen via props of config arrays.
+
+Zorg voor:
+
+Volledige responsiveness (mobile → desktop) met Tailwind.
+
+Goede keyboard-navigatie en ARIA-roles, vooral voor accordions, sliders en embeds.
+
+Gebruik van next/image en next/link waar passend.
+
+All code you generate in this project must respect this creative direction, information architecture, and interaction style.
