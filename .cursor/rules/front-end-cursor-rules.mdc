@@ -14,6 +14,8 @@ Prefer headless CMS integration (e.g. Sanity) for galleries and content when rel
 
 Host assumptions should fit well with Vercel (e.g. use next/image, optimize for performance but prioritize clarity of code).
 
+Images are hosted via Cloudflare Images for optimal performance and CDN distribution. Use the `getCloudflareImageUrl` utility from `@/lib/cloudflare-images` when working with images. The config in `config/site.ts` automatically handles Cloudflare Images URLs with fallback to local images if Cloudflare is not configured.
+
 Brand & Visual Direction
 
 Always implement UI/UX in line with this brand:
