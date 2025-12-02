@@ -23,6 +23,15 @@ export const heroImages: string[] = [
   '/images/hero/hero-3.jpg',
 ]
 
+export const statementImages = {
+  large: '/images/statement/statement-large.jpg',
+  small: '/images/statement/statement-small.jpg',
+}
+
+export const aboutImage = '/images/about/gilles-portrait.jpg'
+
+export const atelierImage = '/images/atelier/interior.jpg'
+
 export const gallerySeries: SeriesData[] = [
   {
     id: 'series-1',

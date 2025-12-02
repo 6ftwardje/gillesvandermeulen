@@ -65,6 +65,39 @@ npm run dev
 - Architectural, clean grotesk typography
 - Slow, subtle, directional motion
 
+## Image Requirements
+
+Add the following images to `public/images/`:
+
+### Hero Images (3 images, fullscreen)
+- `hero/hero-1.jpg` - High-quality model portrait
+- `hero/hero-2.jpg` - High-quality model portrait
+- `hero/hero-3.jpg` - High-quality model portrait
+
+### Statement Section
+- `statement/statement-large.jpg` - Large editorial image (4:5 aspect)
+- `statement/statement-small.jpg` - Small detail image (1:1 aspect)
+
+### About Section
+- `about/gilles-portrait.jpg` - Portrait of Gilles (3:4 aspect)
+
+### Gallery Series
+- `gallery/series-1/image-1.jpg` - Editorial styling
+- `gallery/series-1/image-2.jpg` - Editorial styling
+- `gallery/series-2/image-1.jpg` - Studio styling
+- `gallery/series-2/image-2.jpg` - Studio styling
+- `gallery/series-3/image-1.jpg` - Urban styling
+- `gallery/series-3/image-2.jpg` - Urban styling
+
+### Atelier Section
+- `atelier/interior.jpg` - Architectural interior photo
+
+**Image Guidelines:**
+- High-quality, high-resolution images
+- Model-only photography (no Gilles in hero/gallery)
+- Consistent editorial style
+- Optimize for web (Next.js Image component handles optimization)
+
 ## Development
 
 - All components use TypeScript with strict types
@@ -72,4 +105,12 @@ npm run dev
 - Accessibility-first (ARIA, keyboard navigation)
 - DRY, composable, data-driven architecture
 - Ready for headless CMS integration
+
+## Next Steps
+
+1. Add images to `public/images/` directories
+2. Integrate Salonkee booking widget in `BookingSection`
+3. Connect to headless CMS (Sanity) if needed
+4. Add custom fonts (architectural grotesk) if desired
+5. Deploy to Vercel
 
