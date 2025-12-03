@@ -39,6 +39,7 @@ export const HeroSection = () => {
                   priority={index === 0}
                   className="object-cover"
                   sizes="100vw"
+                  unoptimized={image.includes('imagedelivery.net')}
                 />
               </motion.div>
             )

@@ -35,6 +35,7 @@ export const AboutSection = () => {
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
+              unoptimized={aboutImage.includes('imagedelivery.net')}
             />
           </div>
         </motion.div>

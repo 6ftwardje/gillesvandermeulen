@@ -55,3 +55,5 @@ If you encounter build issues:
 3. Check the build logs in Netlify dashboard for specific errors
 4. Ensure `@netlify/plugin-nextjs` is installed (it should be auto-installed)
 
+
+

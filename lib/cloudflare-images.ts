@@ -5,6 +5,7 @@
  */
 
 const CLOUDFLARE_ACCOUNT_ID = process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_ID
+const CLOUDFLARE_DELIVERY_ACCOUNT_ID = process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_DELIVERY_ACCOUNT_ID || CLOUDFLARE_ACCOUNT_ID
 const CLOUDFLARE_DELIVERY_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_DELIVERY_URL || 'https://imagedelivery.net'
 
 export interface CloudflareImageOptions {
@@ -44,7 +45,9 @@ export function getCloudflareImageUrl(
   if (format) params.append('format', format)
 
   const queryString = params.toString()
-  const baseUrl = `${CLOUDFLARE_DELIVERY_URL}/${CLOUDFLARE_ACCOUNT_ID}/${imageId}/${variant}`
+  // Gebruik delivery Account ID als die is ingesteld, anders fallback naar API Account ID
+  const deliveryAccountId = CLOUDFLARE_DELIVERY_ACCOUNT_ID || CLOUDFLARE_ACCOUNT_ID
+  const baseUrl = `${CLOUDFLARE_DELIVERY_URL}/${deliveryAccountId}/${imageId}/${variant}`
 
   return queryString ? `${baseUrl}?${queryString}` : baseUrl
 }
@@ -88,4 +91,14 @@ export function getCloudflareImageSrcSet(
 export function isCloudflareImagesConfigured(): boolean {
   return !!CLOUDFLARE_ACCOUNT_ID
 }
+
+/**
+ * Check of een URL een Cloudflare Images URL is
+ */
+export function isCloudflareImageUrl(url: string): boolean {
+  if (!url) return false
+  return url.includes('imagedelivery.net') || url.includes(CLOUDFLARE_DELIVERY_URL || 'imagedelivery.net')
+}
+
+
 

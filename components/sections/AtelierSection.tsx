@@ -25,6 +25,7 @@ export const AtelierSection = () => {
             fill
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 50vw"
+            unoptimized={atelierImage.includes('imagedelivery.net')}
           />
         </motion.div>
 

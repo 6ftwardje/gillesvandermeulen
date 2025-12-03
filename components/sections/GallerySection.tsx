@@ -46,6 +46,7 @@ export const GallerySection = () => {
                             ? '(max-width: 1024px) 100vw, 66vw'
                             : '(max-width: 1024px) 100vw, 33vw'
                         }
+                        unoptimized={image.src.includes('imagedelivery.net')}
                       />
                     </div>
                   </motion.div>

@@ -23,7 +23,7 @@ export const siteConfig: SiteConfig = {
 // Als je nog geen Cloudflare Images hebt ingesteld, worden lokale images gebruikt als fallback
 const CLOUDFLARE_IMAGE_IDS = {
   hero: [
-    'hero-1', // Vervang met werkelijke Image ID
+    'ad402027-d330-414d-13ea-391d835e5900', // Vervang met werkelijke Image ID
     'hero-2', // Vervang met werkelijke Image ID
     'hero-3', // Vervang met werkelijke Image ID
   ],

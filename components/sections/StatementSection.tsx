@@ -40,6 +40,7 @@ export const StatementSection = () => {
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 33vw"
+              unoptimized={statementImages.large.includes('imagedelivery.net')}
             />
           </div>
           <div className="relative aspect-square w-full overflow-hidden">
@@ -49,6 +50,7 @@ export const StatementSection = () => {
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 33vw"
+              unoptimized={statementImages.small.includes('imagedelivery.net')}
             />
           </div>
         </motion.div>

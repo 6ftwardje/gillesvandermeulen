@@ -26,6 +26,7 @@ export const ImagePair = ({ image1, image2, layout = 'asymmetric', className }: 
           height={image1.height}
           className="h-full w-full object-cover"
           priority={image1.priority}
+          unoptimized={image1.src.includes('imagedelivery.net')}
         />
       </div>
       <div>
@@ -36,9 +37,12 @@ export const ImagePair = ({ image1, image2, layout = 'asymmetric', className }: 
           height={image2.height}
           className="h-full w-full object-cover"
           priority={image2.priority}
+          unoptimized={image2.src.includes('imagedelivery.net')}
         />
       </div>
     </div>
   )
 }
+
+
 
