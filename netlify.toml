@@ -6,6 +6,9 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Disable secrets scanning for Cloudflare Images Account IDs
+  # These are public identifiers, not secrets, and are intentionally exposed in client-side code
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_ID,NEXT_PUBLIC_CLOUDFLARE_IMAGES_DELIVERY_ACCOUNT_ID"
 
 # Headers for security and performance
 [[headers]]

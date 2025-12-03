@@ -40,16 +40,15 @@ if (!ACCOUNT_ID) {
   process.exit(1)
 }
 
-// Test Image ID uit config
-const TEST_IMAGE_ID = 'ad402027-d330-414d-13ea-391d835e5900'
-const EXPECTED_ACCOUNT_ID = 'ea1f598971ddfc4de86d39ec4533c41a' // Uit curl command
+// Test Image ID uit config (kan worden aangepast)
+const TEST_IMAGE_ID = process.env.TEST_IMAGE_ID || 'ad402027-d330-414d-13ea-391d835e5900'
+const EXPECTED_ACCOUNT_ID = process.env.EXPECTED_ACCOUNT_ID || '' // Optioneel: voor verificatie
 
 console.log('Test Image ID:', TEST_IMAGE_ID)
-console.log('Expected Account ID (from curl):', EXPECTED_ACCOUNT_ID)
 console.log('Configured Account ID:', ACCOUNT_ID)
 console.log('')
 
-if (ACCOUNT_ID !== EXPECTED_ACCOUNT_ID) {
+if (EXPECTED_ACCOUNT_ID && ACCOUNT_ID !== EXPECTED_ACCOUNT_ID) {
   console.log('⚠️  WARNING: Account ID mismatch!')
   console.log(`   Configured: ${ACCOUNT_ID}`)
   console.log(`   Expected: ${EXPECTED_ACCOUNT_ID}`)

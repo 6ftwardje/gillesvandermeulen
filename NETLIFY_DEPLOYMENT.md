@@ -11,8 +11,17 @@ This project is optimized for deployment on Netlify.
 
 Make sure to set the following environment variables in your Netlify dashboard (Site settings → Environment variables):
 
-- `NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_ID` - Your Cloudflare Images Account ID (optional, if using Cloudflare Images)
-- `NEXT_PUBLIC_CLOUDFLARE_IMAGES_DELIVERY_URL` - Cloudflare Images delivery URL (optional, defaults to `https://imagedelivery.net`)
+**Required for Cloudflare Images:**
+- `NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_ID` - Your Cloudflare Images API Account ID (used for API calls)
+- `NEXT_PUBLIC_CLOUDFLARE_IMAGES_DELIVERY_ACCOUNT_ID` - Your Cloudflare Images Delivery Account ID (used in image URLs, can be different from API Account ID)
+
+**Optional:**
+- `NEXT_PUBLIC_CLOUDFLARE_IMAGES_DELIVERY_URL` - Cloudflare Images delivery URL (defaults to `https://imagedelivery.net`)
+
+**Important:** The Delivery Account ID is often different from the API Account ID. You can find it by:
+1. Making an API call to get image details: `curl -H "Authorization: Bearer <token>" https://api.cloudflare.com/client/v4/accounts/<api_account_id>/images/v1/<image_id>`
+2. The `variants` array in the response contains URLs with the delivery Account ID
+3. Extract the Account ID from the variant URL (the part between `imagedelivery.net/` and the image ID)
 
 ## Deployment Steps
 
