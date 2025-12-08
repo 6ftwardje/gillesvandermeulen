@@ -24,8 +24,8 @@ export const siteConfig: SiteConfig = {
 const CLOUDFLARE_IMAGE_IDS = {
   hero: [
     'ad402027-d330-414d-13ea-391d835e5900', // Vervang met werkelijke Image ID
-    'hero-2', // Vervang met werkelijke Image ID
-    'hero-3', // Vervang met werkelijke Image ID
+    'ab471d33-1311-449a-2507-2e581b34cb00', // Vervang met werkelijke Image ID
+    'bc04322f-fda0-44bc-74f3-3b259fd55d00', // Vervang met werkelijke Image ID
   ],
   statement: {
     large: 'statement-large', // Vervang met werkelijke Image ID
