@@ -53,7 +53,11 @@ const CLOUDFLARE_IMAGE_IDS = {
 function getImageUrl(cloudflareId: string, localPath: string, options?: { width?: number; height?: number }): string {
   if (isCloudflareImagesConfigured() && cloudflareId && !cloudflareId.includes('/')) {
     // Als het een Cloudflare Image ID is (geen path), gebruik Cloudflare
-    return getCloudflareImageUrl(cloudflareId, 'public', options)
+    const cloudflareUrl = getCloudflareImageUrl(cloudflareId, 'public', options)
+    // Als Cloudflare URL is gegenereerd, gebruik die, anders fallback naar lokaal
+    if (cloudflareUrl) {
+      return cloudflareUrl
+    }
   }
   // Anders gebruik lokale path
   return localPath

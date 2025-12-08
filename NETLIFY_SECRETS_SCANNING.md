@@ -50,3 +50,5 @@ Na het toevoegen van `SECRETS_SCAN_OMIT_KEYS`:
 - [Netlify Secrets Scanning Docs](https://docs.netlify.com/security/secrets-scanning/)
 - [Environment Variables in Netlify](https://docs.netlify.com/environment-variables/overview/)
 
+
+

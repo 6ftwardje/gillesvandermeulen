@@ -74,3 +74,5 @@ Na het deployen, check:
 - ✅ Check Network tab om te zien welke URLs worden gebruikt
 - ✅ Verify dat de image IDs correct zijn in `config/site.ts`
 
+
+

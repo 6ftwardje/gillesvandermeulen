@@ -29,8 +29,9 @@ export function getCloudflareImageUrl(
   variant: string = 'public',
   options: CloudflareImageOptions = {}
 ): string {
-  if (!CLOUDFLARE_ACCOUNT_ID) {
-    console.warn('CLOUDFLARE_ACCOUNT_ID is not set. Falling back to local images.')
+  // If Cloudflare is not configured or imageId is invalid, return empty string
+  // This allows the fallback to local images in config/site.ts
+  if (!CLOUDFLARE_ACCOUNT_ID || !imageId || imageId.includes('/')) {
     return ''
   }
 
@@ -47,6 +48,12 @@ export function getCloudflareImageUrl(
   const queryString = params.toString()
   // Gebruik delivery Account ID als die is ingesteld, anders fallback naar API Account ID
   const deliveryAccountId = CLOUDFLARE_DELIVERY_ACCOUNT_ID || CLOUDFLARE_ACCOUNT_ID
+  
+  // Ensure we have a valid delivery account ID
+  if (!deliveryAccountId) {
+    return ''
+  }
+  
   const baseUrl = `${CLOUDFLARE_DELIVERY_URL}/${deliveryAccountId}/${imageId}/${variant}`
 
   return queryString ? `${baseUrl}?${queryString}` : baseUrl
