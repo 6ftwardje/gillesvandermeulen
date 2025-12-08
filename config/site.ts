@@ -28,23 +28,23 @@ const CLOUDFLARE_IMAGE_IDS = {
     'bc04322f-fda0-44bc-74f3-3b259fd55d00', // Vervang met werkelijke Image ID
   ],
   statement: {
-    large: 'statement-large', // Vervang met werkelijke Image ID
-    small: 'statement-small', // Vervang met werkelijke Image ID
+    large: 'a46202f5-b881-41da-8b00-8c79bd81f600', // Vervang met werkelijke Image ID
+    small: '178e593a-d729-4f3c-ed2c-5f49bd5f3300', // Vervang met werkelijke Image ID
   },
-  about: 'gilles-portrait', // Vervang met werkelijke Image ID
-  atelier: 'atelier-interior', // Vervang met werkelijke Image ID
+  about: '4ddae1e9-3018-429c-927d-3c18612a0100', // Vervang met werkelijke Image ID
+  atelier: '135995c4-6543-490a-85b9-c65b28e26900', // Vervang met werkelijke Image ID
   gallery: {
     'series-1': [
-      'series-1-image-1', // Vervang met werkelijke Image ID
-      'series-1-image-2', // Vervang met werkelijke Image ID
+      '9ab97f68-6422-4194-2464-2e0bbeac1600', // Vervang met werkelijke Image ID
+      '958c80a4-4cb2-4e68-4f04-0046e9e3db00', // Vervang met werkelijke Image ID
     ],
     'series-2': [
-      'series-2-image-1', // Vervang met werkelijke Image ID
-      'series-2-image-2', // Vervang met werkelijke Image ID
+      'be7f9097-8297-4d76-66ee-4defbd210800', // Vervang met werkelijke Image ID
+      'cea7eb5a-2e94-4ca5-98ee-3252d4fe4500', // Vervang met werkelijke Image ID
     ],
     'series-3': [
-      'series-3-image-1', // Vervang met werkelijke Image ID
-      'series-3-image-2', // Vervang met werkelijke Image ID
+      '81cb932f-2abb-431c-3a9f-d1b8a9daa500', // Vervang met werkelijke Image ID
+      '55b7151c-b71b-4a61-fffe-e56419adec00', // Vervang met werkelijke Image ID
     ],
   },
 }

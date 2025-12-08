@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider'
+import { UiStyleProvider } from '@/components/providers/UiStyleProvider'
 import { Navigation } from '@/components/ui/Navigation'
 import { siteConfig } from '@/config/site'
 import './globals.css'
@@ -29,10 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SmoothScrollProvider>
-          <Navigation />
-          {children}
-        </SmoothScrollProvider>
+        <UiStyleProvider>
+          <SmoothScrollProvider>
+            <Navigation />
+            {children}
+          </SmoothScrollProvider>
+        </UiStyleProvider>
       </body>
     </html>
   )

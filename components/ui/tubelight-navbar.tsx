@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useUiStyle } from "@/components/providers/UiStyleProvider"
 
 interface NavItem {
   name: string
@@ -20,6 +21,18 @@ interface NavBarProps {
 export function NavBar({ items, className }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name)
   const [isMobile, setIsMobile] = useState(false)
+  const { uiStyle } = useUiStyle()
+  const isLight = uiStyle === "light"
+
+  // Debug logging
+  useEffect(() => {
+    console.log(`[NavBar] UI Style changed: ${uiStyle}, isLight: ${isLight}`)
+    console.log(`[NavBar] Expected styles:`, {
+      background: isLight ? 'bg-white/20' : 'bg-black/60',
+      border: isLight ? 'border-white/30' : 'border-black/70',
+      text: isLight ? 'text-white' : 'text-black'
+    })
+  }, [uiStyle, isLight])
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,7 +82,14 @@ export function NavBar({ items, className }: NavBarProps) {
         className,
       )}
     >
-      <div className="flex items-center gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
+      <div
+        className={cn(
+          "flex items-center gap-3 backdrop-blur-xl py-1 px-1 rounded-full shadow-lg transition-colors duration-300",
+          isLight
+            ? "bg-white/20 border border-white/30"
+            : "bg-black/60 border border-black/70",
+        )}
+      >
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.name
@@ -80,9 +100,14 @@ export function NavBar({ items, className }: NavBarProps) {
               href={item.url}
               onClick={() => setActiveTab(item.name)}
               className={cn(
-                "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors",
-                "text-foreground/80 hover:text-primary",
-                isActive && "bg-muted text-primary",
+                "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors duration-300",
+                isLight
+                  ? isActive
+                    ? "bg-white/30 text-white"
+                    : "text-white/80 hover:text-white"
+                  : isActive
+                    ? "bg-black/50 text-black"
+                    : "text-black hover:text-black",
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
@@ -92,7 +117,10 @@ export function NavBar({ items, className }: NavBarProps) {
               {isActive && (
                 <motion.div
                   layoutId="lamp"
-                  className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
+                  className={cn(
+                    "absolute inset-0 w-full rounded-full -z-10 transition-colors duration-300",
+                    isLight ? "bg-white/10" : "bg-black/20",
+                  )}
                   initial={false}
                   transition={{
                     type: "spring",
@@ -100,10 +128,30 @@ export function NavBar({ items, className }: NavBarProps) {
                     damping: 30,
                   }}
                 >
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
-                    <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
-                    <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
-                    <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
+                  <div
+                    className={cn(
+                      "absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 rounded-t-full transition-colors duration-300",
+                      isLight ? "bg-white" : "bg-black/90",
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "absolute w-12 h-6 rounded-full blur-md -top-2 -left-2 transition-colors duration-300",
+                        isLight ? "bg-white/20" : "bg-black/30",
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        "absolute w-8 h-6 rounded-full blur-md -top-1 transition-colors duration-300",
+                        isLight ? "bg-white/20" : "bg-black/30",
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        "absolute w-4 h-4 rounded-full blur-sm top-0 left-2 transition-colors duration-300",
+                        isLight ? "bg-white/20" : "bg-black/30",
+                      )}
+                    />
                   </div>
                 </motion.div>
               )}
