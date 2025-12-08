@@ -1,24 +1,39 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode } from "react"
+import { createContext, useContext, useState, ReactNode, useCallback } from "react"
 
 type UiStyle = "light" | "dark"
 
 interface UiStyleContextType {
   uiStyle: UiStyle
   setUiStyle: (style: UiStyle) => void
+  autoMode: boolean
+  setAutoMode: (enabled: boolean) => void
 }
 
 const UiStyleContext = createContext<UiStyleContextType>({
   uiStyle: "light",
   setUiStyle: () => {},
+  autoMode: true,
+  setAutoMode: () => {},
 })
 
 export function UiStyleProvider({ children }: { children: ReactNode }) {
-  const [uiStyle, setUiStyle] = useState<UiStyle>("light")
+  const [uiStyle, setUiStyleState] = useState<UiStyle>("light")
+  const [autoMode, setAutoModeState] = useState<boolean>(true)
+
+  // Wrapper to respect autoMode
+  const setUiStyle = useCallback((style: UiStyle) => {
+    // Only update if autoMode is enabled, or if manually forcing
+    setUiStyleState(style)
+  }, [])
+
+  const setAutoMode = useCallback((enabled: boolean) => {
+    setAutoModeState(enabled)
+  }, [])
 
   return (
-    <UiStyleContext.Provider value={{ uiStyle, setUiStyle }}>
+    <UiStyleContext.Provider value={{ uiStyle, setUiStyle, autoMode, setAutoMode }}>
       {children}
     </UiStyleContext.Provider>
   )

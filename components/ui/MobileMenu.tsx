@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { useUiStyle } from "@/components/providers/UiStyleProvider";
 
 const menuItems = [
   { label: "Home", href: "#hero" },
@@ -20,6 +21,19 @@ interface MobileMenuProps {
 export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const firstItemRef = useRef<HTMLAnchorElement>(null);
+  const { setUiStyle, setAutoMode } = useUiStyle();
+
+  // Force dark mode when menu opens, re-enable auto mode when it closes
+  useEffect(() => {
+    if (isOpen) {
+      // Disable auto mode and force dark UI (black on white background)
+      setAutoMode(false);
+      setUiStyle("dark");
+    } else {
+      // Re-enable auto mode when menu closes
+      setAutoMode(true);
+    }
+  }, [isOpen, setAutoMode, setUiStyle]);
 
   // ESC key handler
   useEffect(() => {

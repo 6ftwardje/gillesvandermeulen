@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { NavBar } from '@/components/ui/tubelight-navbar'
 import { HamburgerButton } from '@/components/ui/HamburgerButton'
 import { MobileMenu } from '@/components/ui/MobileMenu'
+import { useDynamicNavbarColor } from '@/hooks/useDynamicNavbarColor'
 import { Home, User, Images, Building2, Euro, Calendar } from 'lucide-react'
 
 const navItems = [
@@ -17,6 +18,9 @@ const navItems = [
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  
+  // Enable dynamic navbar color detection
+  useDynamicNavbarColor()
 
   const toggle = () => setIsOpen(!isOpen)
 
@@ -32,7 +36,7 @@ export function Navigation() {
   return (
     <>
       {/* MOBILE ONLY - Hamburger Button */}
-      <div className="fixed z-50 top-6 right-6 lg:hidden">
+      <div className="fixed z-50 top-6 right-6 lg:hidden" data-navbar>
         <HamburgerButton isOpen={isOpen} toggle={toggle} />
       </div>
 
@@ -40,7 +44,7 @@ export function Navigation() {
       <MobileMenu isOpen={isOpen} toggle={toggle} />
 
       {/* DESKTOP NAV - Hidden on mobile */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block" data-navbar>
         <NavBar items={navItems} />
       </div>
     </>

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useUiStyle } from "@/components/providers/UiStyleProvider";
 
 interface HamburgerButtonProps {
   isOpen: boolean;
@@ -8,6 +9,10 @@ interface HamburgerButtonProps {
 }
 
 export function HamburgerButton({ isOpen, toggle }: HamburgerButtonProps) {
+  const { uiStyle } = useUiStyle();
+  const isLight = uiStyle === "light";
+  const strokeColor = isLight ? "#fff" : "#000";
+
   return (
     <button
       onClick={toggle}
@@ -16,17 +21,20 @@ export function HamburgerButton({ isOpen, toggle }: HamburgerButtonProps) {
       className="relative z-50 w-8 h-8 flex items-center justify-center"
     >
       <motion.span
-        className="absolute h-[2px] w-6 bg-black"
+        className="absolute h-[2px] w-6 transition-colors duration-300"
+        style={{ backgroundColor: strokeColor }}
         animate={{ rotate: isOpen ? 45 : 0, y: isOpen ? 0 : -6 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       />
       <motion.span
-        className="absolute h-[2px] w-6 bg-black"
+        className="absolute h-[2px] w-6 transition-colors duration-300"
+        style={{ backgroundColor: strokeColor }}
         animate={{ opacity: isOpen ? 0 : 1 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
       />
       <motion.span
-        className="absolute h-[2px] w-6 bg-black"
+        className="absolute h-[2px] w-6 transition-colors duration-300"
+        style={{ backgroundColor: strokeColor }}
         animate={{ rotate: isOpen ? -45 : 0, y: isOpen ? 0 : 6 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       />

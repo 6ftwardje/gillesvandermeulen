@@ -43,7 +43,7 @@ const CLOUDFLARE_IMAGE_IDS = {
       'cea7eb5a-2e94-4ca5-98ee-3252d4fe4500', // Vervang met werkelijke Image ID
     ],
     'series-3': [
-      '81cb932f-2abb-431c-3a9f-d1b8a9daa500', // Vervang met werkelijke Image ID
+      'd99bfc89-317f-4ad9-ae52-bfb2585b9e00', // Vervang met werkelijke Image ID
       '55b7151c-b71b-4a61-fffe-e56419adec00', // Vervang met werkelijke Image ID
     ],
   },

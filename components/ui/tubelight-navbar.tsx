@@ -81,13 +81,14 @@ export function NavBar({ items, className }: NavBarProps) {
         "fixed bottom-0 sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-6",
         className,
       )}
+      data-navbar
     >
       <div
         className={cn(
           "flex items-center gap-3 backdrop-blur-xl py-1 px-1 rounded-full shadow-lg transition-colors duration-300",
           isLight
-            ? "bg-white/20 border border-white/30"
-            : "bg-black/60 border border-black/70",
+            ? "bg-black/20 border border-white/40 text-white"
+            : "bg-white/40 border border-black/20 text-black",
         )}
       >
         {items.map((item) => {
@@ -106,8 +107,8 @@ export function NavBar({ items, className }: NavBarProps) {
                     ? "bg-white/30 text-white"
                     : "text-white/80 hover:text-white"
                   : isActive
-                    ? "bg-black/50 text-black"
-                    : "text-black hover:text-black",
+                    ? "bg-black/20 text-black"
+                    : "text-black/80 hover:text-black",
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
@@ -119,7 +120,7 @@ export function NavBar({ items, className }: NavBarProps) {
                   layoutId="lamp"
                   className={cn(
                     "absolute inset-0 w-full rounded-full -z-10 transition-colors duration-300",
-                    isLight ? "bg-white/10" : "bg-black/20",
+                    isLight ? "bg-white/20" : "bg-black/10",
                   )}
                   initial={false}
                   transition={{
@@ -131,25 +132,25 @@ export function NavBar({ items, className }: NavBarProps) {
                   <div
                     className={cn(
                       "absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 rounded-t-full transition-colors duration-300",
-                      isLight ? "bg-white" : "bg-black/90",
+                      isLight ? "bg-white" : "bg-black",
                     )}
                   >
                     <div
                       className={cn(
                         "absolute w-12 h-6 rounded-full blur-md -top-2 -left-2 transition-colors duration-300",
-                        isLight ? "bg-white/20" : "bg-black/30",
+                        isLight ? "bg-white/30" : "bg-black/20",
                       )}
                     />
                     <div
                       className={cn(
                         "absolute w-8 h-6 rounded-full blur-md -top-1 transition-colors duration-300",
-                        isLight ? "bg-white/20" : "bg-black/30",
+                        isLight ? "bg-white/30" : "bg-black/20",
                       )}
                     />
                     <div
                       className={cn(
                         "absolute w-4 h-4 rounded-full blur-sm top-0 left-2 transition-colors duration-300",
-                        isLight ? "bg-white/20" : "bg-black/30",
+                        isLight ? "bg-white/30" : "bg-black/20",
                       )}
                     />
                   </div>

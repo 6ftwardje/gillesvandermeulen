@@ -107,7 +107,17 @@ export const HeroSection = () => {
     })
   }
 
+  // Emit event when image changes for dynamic navbar color hook
+  useEffect(() => {
+    // Emit custom event for brightness detection hook
+    const event = new CustomEvent('hero-image-changed', {
+      detail: { imageIndex: currentImageIndex }
+    })
+    window.dispatchEvent(event)
+  }, [currentImageIndex])
+
   // Analyseer brightness van huidige image bij mount en bij wijzigingen
+  // This is kept for backward compatibility, but the hook will handle dynamic updates
   useEffect(() => {
     const updateUiStyle = async () => {
       const brightness = await analyzeBrightness(heroImages[currentImageIndex])
@@ -146,6 +156,14 @@ export const HeroSection = () => {
             setUiStyle('dark')
           }
         })
+
+        // Emit event for dynamic navbar color hook
+        setTimeout(() => {
+          const event = new CustomEvent('hero-image-changed', {
+            detail: { imageIndex: nextIndex }
+          })
+          window.dispatchEvent(event)
+        }, 500) // Small delay to allow image to render
 
         // Na fade-in (1s), wissel de actieve laag en update indices
         if (transitionTimeoutRef.current) {
@@ -196,6 +214,14 @@ export const HeroSection = () => {
       setNextImageIndex((index + 1) % heroImages.length)
       setActiveLayer((prev) => (prev === 'A' ? 'B' : 'A'))
       setIsTransitioning(false)
+      
+      // Emit event for dynamic navbar color hook
+      setTimeout(() => {
+        const event = new CustomEvent('hero-image-changed', {
+          detail: { imageIndex: index }
+        })
+        window.dispatchEvent(event)
+      }, 100)
     }, 1000)
   }
 
