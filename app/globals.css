@@ -60,3 +60,8 @@ html.lenis {
   pointer-events: none;
 }
 
+/* Body scroll lock for mobile menu */
+body.menu-open {
+  overflow: hidden;
+}
+
