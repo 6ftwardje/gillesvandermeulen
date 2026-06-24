@@ -22,9 +22,7 @@ export function UiStyleProvider({ children }: { children: ReactNode }) {
   const [uiStyle, setUiStyleState] = useState<UiStyle>("light")
   const [autoMode, setAutoModeState] = useState<boolean>(true)
 
-  // Wrapper to respect autoMode
   const setUiStyle = useCallback((style: UiStyle) => {
-    // Only update if autoMode is enabled, or if manually forcing
     setUiStyleState(style)
   }, [])
 
@@ -42,4 +40,3 @@ export function UiStyleProvider({ children }: { children: ReactNode }) {
 export function useUiStyle() {
   return useContext(UiStyleContext)
 }
-

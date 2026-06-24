@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useUiStyle } from "@/components/providers/UiStyleProvider"
 
-interface NavItem {
+export interface NavItem {
   name: string
   url: string
   icon: LucideIcon
@@ -18,45 +19,44 @@ interface NavBarProps {
   className?: string
 }
 
+function getHash(url: string) {
+  if (url.startsWith("/#")) return url.replace("/", "")
+  if (url.startsWith("#")) return url
+  return null
+}
+
 export function NavBar({ items, className }: NavBarProps) {
+  const pathname = usePathname()
   const [activeTab, setActiveTab] = useState(items[0].name)
-  const [isMobile, setIsMobile] = useState(false)
   const { uiStyle } = useUiStyle()
   const isLight = uiStyle === "light"
 
-  // Debug logging
   useEffect(() => {
-    console.log(`[NavBar] UI Style changed: ${uiStyle}, isLight: ${isLight}`)
-    console.log(`[NavBar] Expected styles:`, {
-      background: isLight ? 'bg-white/20' : 'bg-black/60',
-      border: isLight ? 'border-white/30' : 'border-black/70',
-      text: isLight ? 'text-white' : 'text-black'
-    })
-  }, [uiStyle, isLight])
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
+    if (pathname === "/editorial") {
+      setActiveTab("Work")
+      return
     }
 
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    if (pathname !== "/") {
+      return
+    }
 
-  // Sync active tab with scroll position
-  useEffect(() => {
     const handleScroll = () => {
-      const sections = items.map((item) => {
-        const id = item.url.replace('#', '')
-        const element = document.getElementById(id)
-        return { name: item.name, element, url: item.url }
-      })
+      const sections = items
+        .map((item) => {
+          const hash = getHash(item.url)
+          const id = hash?.replace("#", "")
+          const element = id ? document.getElementById(id) : null
+
+          return { name: item.name, element }
+        })
+        .filter((section) => section.element)
 
       const scrollPosition = window.scrollY + window.innerHeight / 2
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i]
+
         if (section.element) {
           const top = section.element.offsetTop
           const bottom = top + section.element.offsetHeight
@@ -69,26 +69,44 @@ export function NavBar({ items, className }: NavBarProps) {
       }
     }
 
-    // Check on mount and scroll
     handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [items])
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [items, pathname])
+
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    item: NavItem
+  ) => {
+    setActiveTab(item.name)
+
+    const hash = getHash(item.url)
+
+    if (pathname === "/" && hash) {
+      event.preventDefault()
+      const element = document.querySelector(hash)
+
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" })
+      }
+    }
+  }
 
   return (
     <div
       className={cn(
-        "fixed bottom-0 sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-6",
+        "fixed left-1/2 top-0 z-50 -translate-x-1/2 pt-6",
         className,
       )}
       data-navbar
     >
       <div
         className={cn(
-          "flex items-center gap-3 backdrop-blur-xl py-1 px-1 rounded-full shadow-lg transition-colors duration-300",
+          "flex items-center gap-3 rounded-full px-1 py-1 shadow-lg backdrop-blur-xl transition-colors duration-300",
           isLight
-            ? "bg-black/20 border border-white/40 text-white"
-            : "bg-white/40 border border-black/20 text-black",
+            ? "border border-white/40 bg-black/20 text-white"
+            : "border border-black/20 bg-white/40 text-black",
         )}
       >
         {items.map((item) => {
@@ -99,9 +117,9 @@ export function NavBar({ items, className }: NavBarProps) {
             <Link
               key={item.name}
               href={item.url}
-              onClick={() => setActiveTab(item.name)}
+              onClick={(event) => handleClick(event, item)}
               className={cn(
-                "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors duration-300",
+                "relative cursor-pointer rounded-full px-6 py-2 text-sm font-semibold transition-colors duration-300",
                 isLight
                   ? isActive
                     ? "bg-white/30 text-white"
@@ -119,7 +137,7 @@ export function NavBar({ items, className }: NavBarProps) {
                 <motion.div
                   layoutId="lamp"
                   className={cn(
-                    "absolute inset-0 w-full rounded-full -z-10 transition-colors duration-300",
+                    "absolute inset-0 -z-10 w-full rounded-full transition-colors duration-300",
                     isLight ? "bg-white/20" : "bg-black/10",
                   )}
                   initial={false}
@@ -131,25 +149,25 @@ export function NavBar({ items, className }: NavBarProps) {
                 >
                   <div
                     className={cn(
-                      "absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 rounded-t-full transition-colors duration-300",
+                      "absolute -top-2 left-1/2 h-1 w-8 -translate-x-1/2 rounded-t-full transition-colors duration-300",
                       isLight ? "bg-white" : "bg-black",
                     )}
                   >
                     <div
                       className={cn(
-                        "absolute w-12 h-6 rounded-full blur-md -top-2 -left-2 transition-colors duration-300",
+                        "absolute -left-2 -top-2 h-6 w-12 rounded-full blur-md transition-colors duration-300",
                         isLight ? "bg-white/30" : "bg-black/20",
                       )}
                     />
                     <div
                       className={cn(
-                        "absolute w-8 h-6 rounded-full blur-md -top-1 transition-colors duration-300",
+                        "absolute -top-1 h-6 w-8 rounded-full blur-md transition-colors duration-300",
                         isLight ? "bg-white/30" : "bg-black/20",
                       )}
                     />
                     <div
                       className={cn(
-                        "absolute w-4 h-4 rounded-full blur-sm top-0 left-2 transition-colors duration-300",
+                        "absolute left-2 top-0 h-4 w-4 rounded-full blur-sm transition-colors duration-300",
                         isLight ? "bg-white/30" : "bg-black/20",
                       )}
                     />
@@ -163,4 +181,3 @@ export function NavBar({ items, className }: NavBarProps) {
     </div>
   )
 }
-

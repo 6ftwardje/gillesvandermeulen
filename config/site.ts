@@ -5,12 +5,25 @@ export const siteConfig: SiteConfig = {
   name: 'Gilles Vandermeulen',
   title: 'GILLES VANDERMEULEN',
   subtitle: 'Hair Artist – Ghent',
+  businessNumber: 'BE 1000597560',
+  media: {
+    heroVideo: {
+      playbackId: process.env.NEXT_PUBLIC_MUX_HERO_PLAYBACK_ID || '',
+      mp4Url: process.env.NEXT_PUBLIC_MUX_HERO_MP4_URL || '',
+      posterTime: process.env.NEXT_PUBLIC_MUX_HERO_POSTER_TIME || '0',
+      maxResolution: process.env.NEXT_PUBLIC_MUX_HERO_MAX_RESOLUTION || '720p',
+    },
+  },
+  booking: {
+    salonkeeUrl: 'https://salonkee.be/salon/gilles-vandermeulen',
+    label: 'Book via Salonkee',
+  },
   address: {
     street: 'Zuidstationstraat 16',
     city: 'Ghent',
   },
   social: {
-    instagram: 'https://instagram.com/gillesvandermeulen',
+    instagram: 'https://www.instagram.com/gillesvandermeulen_/',
   },
   seo: {
     description: 'Premium hair artistry by Gilles Vandermeulen in Ghent. Contemporary, architectural, minimal approach to hair design.',
@@ -197,4 +210,3 @@ export const prices: PriceCategory[] = [
     ],
   },
 ]
-

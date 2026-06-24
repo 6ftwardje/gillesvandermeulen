@@ -7,7 +7,6 @@ import { GallerySection } from '@/components/sections/GallerySection'
 import { AtelierSection } from '@/components/sections/AtelierSection'
 import { PricesSection } from '@/components/sections/PricesSection'
 import { BookingSection } from '@/components/sections/BookingSection'
-import { FooterSection } from '@/components/sections/FooterSection'
 
 export default function Home() {
   return (
@@ -19,10 +18,10 @@ export default function Home() {
       <AtelierSection />
       <PricesSection />
       <BookingSection />
-      <FooterSection />
     </main>
   )
 }
+
 
 
 

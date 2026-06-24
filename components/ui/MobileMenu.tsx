@@ -1,41 +1,38 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { useUiStyle } from "@/components/providers/UiStyleProvider";
 
-const menuItems = [
-  { label: "Home", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Atelier", href: "#atelier" },
-  { label: "Prices", href: "#prices" },
-  { label: "Booking", href: "#booking" },
-];
+export interface MobileMenuItem {
+  label: string;
+  href: string;
+}
 
 interface MobileMenuProps {
   isOpen: boolean;
   toggle: () => void;
+  items: MobileMenuItem[];
 }
 
-export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
+export function MobileMenu({ isOpen, toggle, items }: MobileMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const firstItemRef = useRef<HTMLAnchorElement>(null);
+  const pathname = usePathname();
   const { setUiStyle, setAutoMode } = useUiStyle();
 
-  // Force dark mode when menu opens, re-enable auto mode when it closes
   useEffect(() => {
     if (isOpen) {
-      // Disable auto mode and force dark UI (black on white background)
       setAutoMode(false);
       setUiStyle("dark");
     } else {
-      // Re-enable auto mode when menu closes
       setAutoMode(true);
+      setUiStyle("light");
     }
   }, [isOpen, setAutoMode, setUiStyle]);
 
-  // ESC key handler
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -45,7 +42,6 @@ export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
 
     if (isOpen) {
       document.addEventListener("keydown", handleEscape);
-      // Focus first menu item when menu opens
       setTimeout(() => {
         firstItemRef.current?.focus();
       }, 100);
@@ -56,7 +52,6 @@ export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
     };
   }, [isOpen, toggle]);
 
-  // Focus trap
   useEffect(() => {
     if (!isOpen || !menuRef.current) return;
 
@@ -75,11 +70,9 @@ export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
           e.preventDefault();
           lastElement?.focus();
         }
-      } else {
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
-        }
+      } else if (document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement?.focus();
       }
     };
 
@@ -87,13 +80,18 @@ export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
     return () => menu.removeEventListener("keydown", handleTabKey);
   }, [isOpen]);
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLinkClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
     toggle();
-    // Smooth scroll to section
-    const href = e.currentTarget.getAttribute("href");
-    if (href?.startsWith("#")) {
+
+    const hash = href.startsWith("/#") ? href.replace("/", "") : href;
+
+    if (pathname === "/" && hash.startsWith("#")) {
       e.preventDefault();
-      const element = document.querySelector(href);
+      const element = document.querySelector(hash);
+
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
@@ -105,7 +103,7 @@ export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
       {isOpen && (
         <motion.div
           ref={menuRef}
-          className="fixed inset-0 bg-white flex flex-col items-center justify-center z-40"
+          className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-white"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -118,16 +116,16 @@ export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
             transition={{ duration: 0.35, ease: "easeOut" }}
             className="flex flex-col gap-8 text-center"
           >
-            {menuItems.map((item, index) => (
-              <a
+            {items.map((item, index) => (
+              <Link
                 key={item.label}
                 ref={index === 0 ? firstItemRef : null}
                 href={item.href}
-                onClick={handleLinkClick}
-                className="text-black text-3xl font-semibold tracking-tight hover:opacity-60 transition-opacity focus:outline-none focus:opacity-60"
+                onClick={(event) => handleLinkClick(event, item.href)}
+                className="text-3xl font-semibold tracking-tight text-black transition-opacity hover:opacity-60 focus:outline-none focus:opacity-60"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </motion.div>
         </motion.div>
@@ -135,4 +133,3 @@ export function MobileMenu({ isOpen, toggle }: MobileMenuProps) {
     </AnimatePresence>
   );
 }
-

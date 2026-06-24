@@ -1,341 +1,152 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { siteConfig, heroImages } from '@/config/site'
-import { useUiStyle } from '@/components/providers/UiStyleProvider'
-
-// Brightness threshold: < threshold = donkere achtergrond → light UI (witte tekst)
-//                      >= threshold = lichte achtergrond → dark UI (zwarte tekst)
-// Luminance range: 0 (zwart) tot 255 (wit)
-// Verlaagd naar 100 voor betere detectie van lichte achtergronden
-const BRIGHTNESS_THRESHOLD = 100
+import Link from 'next/link'
+import { ChevronDown } from 'lucide-react'
+import { heroImages } from '@/config/site'
+import { siteConfig } from '@/config/site'
 
 export const HeroSection = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [nextImageIndex, setNextImageIndex] = useState(1)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [activeLayer, setActiveLayer] = useState<'A' | 'B'>('A')
-  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const brightnessCacheRef = useRef<Map<string, number>>(new Map())
-  const { uiStyle, setUiStyle } = useUiStyle()
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isMobileHeroVideoViewport, setIsMobileHeroVideoViewport] = useState(false)
+  const heroVideo = siteConfig.media.heroVideo
+  const hasHeroVideo = Boolean(heroVideo.playbackId)
+  const shouldUseHeroVideo = hasHeroVideo && isMobileHeroVideoViewport
+  const muxStreamUrl = hasHeroVideo
+    ? `https://stream.mux.com/${heroVideo.playbackId}.m3u8`
+    : ''
+  const muxPosterUrl = hasHeroVideo
+    ? `https://image.mux.com/${heroVideo.playbackId}/thumbnail.webp?time=${heroVideo.posterTime}`
+    : ''
 
-  // Preload alle hero afbeeldingen
   useEffect(() => {
-    heroImages.forEach((src) => {
-      const img = new window.Image()
-      img.src = src
-    })
+    const mediaQuery = window.matchMedia('(max-width: 767px)')
+    const updateViewport = () => setIsMobileHeroVideoViewport(mediaQuery.matches)
+
+    updateViewport()
+    mediaQuery.addEventListener('change', updateViewport)
+
+    return () => mediaQuery.removeEventListener('change', updateViewport)
   }, [])
 
-  // Brightness analyse functie met caching
-  const analyzeBrightness = (src: string): Promise<number> => {
-    // Check cache eerst
-    if (brightnessCacheRef.current.has(src)) {
-      const cached = brightnessCacheRef.current.get(src)!
-      console.log(`[Brightness] Using cached brightness: ${cached.toFixed(2)} for ${src.substring(src.length - 30)}`)
-      return Promise.resolve(cached)
+  useEffect(() => {
+    if (shouldUseHeroVideo) {
+      return
     }
 
-    return new Promise((resolve) => {
-      const img = new window.Image()
-      
-      // Voor externe images, probeer verschillende CORS strategieën
-      if (src.startsWith('http')) {
-        // Strategie 1: Probeer met crossOrigin
-        img.crossOrigin = 'anonymous'
-      }
-      
-      img.src = src
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % heroImages.length)
+    }, 5000)
 
-      const handleLoad = () => {
-        try {
-          const canvas = document.createElement('canvas')
-          canvas.width = 100 // Verhoogd voor betere precisie
-          canvas.height = 100
-          const ctx = canvas.getContext('2d', { willReadFrequently: true })
-          if (!ctx) {
-            console.error('[Brightness] No canvas context')
-            resolve(128)
-            return
-          }
+    return () => clearInterval(interval)
+  }, [shouldUseHeroVideo])
 
-          ctx.drawImage(img, 0, 0, 100, 100)
-          const data = ctx.getImageData(0, 0, 100, 100).data
-
-          let brightness = 0
-          let pixelCount = 0
-          for (let i = 0; i < data.length; i += 4) {
-            const r = data[i]
-            const g = data[i + 1]
-            const b = data[i + 2]
-            // Skip fully transparent pixels
-            if (data[i + 3] > 0) {
-              brightness += (r * 0.299 + g * 0.587 + b * 0.114) // Luminance formula
-              pixelCount++
-            }
-          }
-
-          const avg = pixelCount > 0 ? brightness / pixelCount : 128
-          console.log(`[Brightness] ${src.substring(src.length - 30)}: ${avg.toFixed(2)}, Style: ${avg < BRIGHTNESS_THRESHOLD ? 'light' : 'dark'}`)
-          
-          // Cache het resultaat
-          brightnessCacheRef.current.set(src, avg)
-          resolve(avg)
-        } catch (error) {
-          console.error('[Brightness] Canvas error:', error, src)
-          resolve(128)
-        }
-      }
-
-      const handleError = () => {
-        console.error('[Brightness] Image load failed:', src)
-        // Probeer zonder crossOrigin als fallback
-        if (src.startsWith('http') && img.crossOrigin) {
-          const img2 = new window.Image()
-          img2.onload = handleLoad
-          img2.onerror = () => resolve(128)
-          img2.src = src
-        } else {
-          resolve(128)
-        }
-      }
-
-      img.onload = handleLoad
-      img.onerror = handleError
-    })
+  const handleDotClick = (index: number) => {
+    setCurrentIndex(index)
   }
 
-  // Emit event when image changes for dynamic navbar color hook
-  useEffect(() => {
-    // Emit custom event for brightness detection hook
-    const event = new CustomEvent('hero-image-changed', {
-      detail: { imageIndex: currentImageIndex }
-    })
-    window.dispatchEvent(event)
-  }, [currentImageIndex])
-
-  // Analyseer brightness van huidige image bij mount en bij wijzigingen
-  // This is kept for backward compatibility, but the hook will handle dynamic updates
-  useEffect(() => {
-    const updateUiStyle = async () => {
-      const brightness = await analyzeBrightness(heroImages[currentImageIndex])
-      console.log(`[HeroSection] Current image brightness: ${brightness.toFixed(2)} for image ${currentImageIndex}`)
-      // Als achtergrond donker (< threshold) → gebruik light UI (witte tekst)
-      // Als achtergrond licht (>= threshold) → gebruik dark UI (zwarte tekst)
-      if (brightness < BRIGHTNESS_THRESHOLD) {
-        console.log(`[HeroSection] Setting UI style to: light (brightness ${brightness.toFixed(2)} < ${BRIGHTNESS_THRESHOLD})`)
-        setUiStyle('light')
-      } else {
-        console.log(`[HeroSection] Setting UI style to: dark (brightness ${brightness.toFixed(2)} >= ${BRIGHTNESS_THRESHOLD})`)
-        setUiStyle('dark')
-      }
+  const scrollToNext = () => {
+    const statementSection = document.querySelector('#statement')
+    if (statementSection) {
+      statementSection.scrollIntoView({ behavior: 'smooth' })
     }
-
-    updateUiStyle()
-  }, [currentImageIndex, setUiStyle])
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      // Start transition: fade out current, fade in next
-      setIsTransitioning(true)
-
-      // Bepaal volgende image index
-      setCurrentImageIndex((prev) => {
-        const nextIndex = (prev + 1) % heroImages.length
-
-        // Analyseer brightness van de volgende image VOORDAT we de index updaten
-        analyzeBrightness(heroImages[nextIndex]).then((brightness) => {
-          console.log(`[HeroSection] Auto-transition brightness: ${brightness.toFixed(2)} for image ${nextIndex} (threshold: ${BRIGHTNESS_THRESHOLD})`)
-          if (brightness < BRIGHTNESS_THRESHOLD) {
-            console.log(`[HeroSection] → Setting UI to LIGHT (dark background)`)
-            setUiStyle('light')
-          } else {
-            console.log(`[HeroSection] → Setting UI to DARK (light background)`)
-            setUiStyle('dark')
-          }
-        })
-
-        // Emit event for dynamic navbar color hook
-        setTimeout(() => {
-          const event = new CustomEvent('hero-image-changed', {
-            detail: { imageIndex: nextIndex }
-          })
-          window.dispatchEvent(event)
-        }, 500) // Small delay to allow image to render
-
-        // Na fade-in (1s), wissel de actieve laag en update indices
-        if (transitionTimeoutRef.current) {
-          clearTimeout(transitionTimeoutRef.current)
-        }
-
-        transitionTimeoutRef.current = setTimeout(() => {
-          setNextImageIndex((nextIndex + 1) % heroImages.length)
-          setActiveLayer((prev) => (prev === 'A' ? 'B' : 'A'))
-          setIsTransitioning(false)
-        }, 1000) // Moet gelijk zijn aan opacity transition tijd
-
-        return nextIndex
-      })
-    }, 5000) // Change image every 5 seconds
-
-    return () => {
-      clearInterval(interval)
-      if (transitionTimeoutRef.current) {
-        clearTimeout(transitionTimeoutRef.current)
-      }
-    }
-  }, [setUiStyle])
-
-  // Handle manual image selection via indicators
-  const handleImageSelect = async (index: number) => {
-    if (index === currentImageIndex || isTransitioning) return
-
-    setIsTransitioning(true)
-
-    // Analyseer brightness van de nieuwe image
-    const brightness = await analyzeBrightness(heroImages[index])
-    console.log(`[HeroSection] Manual select brightness: ${brightness.toFixed(2)} for image ${index}`)
-    if (brightness < BRIGHTNESS_THRESHOLD) {
-      console.log(`[HeroSection] Setting UI style to: light`)
-      setUiStyle('light')
-    } else {
-      console.log(`[HeroSection] Setting UI style to: dark`)
-      setUiStyle('dark')
-    }
-
-    if (transitionTimeoutRef.current) {
-      clearTimeout(transitionTimeoutRef.current)
-    }
-
-    transitionTimeoutRef.current = setTimeout(() => {
-      setCurrentImageIndex(index)
-      setNextImageIndex((index + 1) % heroImages.length)
-      setActiveLayer((prev) => (prev === 'A' ? 'B' : 'A'))
-      setIsTransitioning(false)
-      
-      // Emit event for dynamic navbar color hook
-      setTimeout(() => {
-        const event = new CustomEvent('hero-image-changed', {
-          detail: { imageIndex: index }
-        })
-        window.dispatchEvent(event)
-      }, 100)
-    }, 1000)
   }
-
-  // Bepaal welke images op welke laag staan
-  // Wanneer activeLayer === 'A': Layer A toont currentImageIndex, Layer B toont nextImageIndex
-  // Wanneer activeLayer === 'B': Layer B toont currentImageIndex, Layer A toont nextImageIndex
-  const layerAImageIndex = activeLayer === 'A' ? currentImageIndex : nextImageIndex
-  const layerBImageIndex = activeLayer === 'B' ? currentImageIndex : nextImageIndex
-
-  // Bepaal opacity: actieve laag is zichtbaar, tijdens transition fade de andere in
-  const layerAOpacity = activeLayer === 'A' && !isTransitioning ? 1 : 
-                        activeLayer === 'A' && isTransitioning ? 0 :
-                        activeLayer === 'B' && isTransitioning ? 1 : 0
-  
-  const layerBOpacity = activeLayer === 'B' && !isTransitioning ? 1 :
-                        activeLayer === 'B' && isTransitioning ? 0 :
-                        activeLayer === 'A' && isTransitioning ? 1 : 0
 
   return (
-    <section id="hero" className="relative min-h-screen w-full overflow-hidden bg-black">
-      {/* Twee overlappende image lagen voor smooth crossfade */}
-      <div className="absolute inset-0">
-        {/* Layer A */}
-        <Image
-          src={heroImages[layerAImageIndex]}
-          alt={`Hero image ${layerAImageIndex + 1}`}
-          fill
-          priority={layerAImageIndex === 0}
-          unoptimized={heroImages[layerAImageIndex].includes('imagedelivery.net')}
-          className="absolute inset-0 object-cover transition-opacity duration-1000 ease-out"
-          style={{ opacity: layerAOpacity }}
-          sizes="100vw"
-        />
-
-        {/* Layer B */}
-        <Image
-          src={heroImages[layerBImageIndex]}
-          alt={`Hero image ${layerBImageIndex + 1}`}
-          fill
-          priority={layerBImageIndex === 0}
-          unoptimized={heroImages[layerBImageIndex].includes('imagedelivery.net')}
-          className="absolute inset-0 object-cover transition-opacity duration-1000 ease-out"
-          style={{ opacity: layerBOpacity }}
-          sizes="100vw"
-        />
-      </div>
-
-      {/* Overlay gradient for text readability - alleen bij light UI */}
-      {uiStyle === 'light' && (
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+    <section id="hero" className="relative h-screen w-full overflow-hidden">
+      {/* Background media */}
+      {shouldUseHeroVideo ? (
+        <video
+          key={heroVideo.playbackId}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={muxPosterUrl}
+          className="absolute inset-0 h-full w-full object-cover"
+          aria-label="Gilles Vandermeulen hero background video"
+        >
+          {heroVideo.mp4Url && <source src={heroVideo.mp4Url} type="video/mp4" />}
+          <source src={muxStreamUrl} type="application/x-mpegURL" />
+        </video>
+      ) : (
+        heroImages.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <Image
+              src={image}
+              alt={`Hero image ${index + 1}`}
+              fill
+              className="object-cover"
+              priority={index === 0}
+              sizes="100vw"
+              unoptimized={image.includes('imagedelivery.net')}
+            />
+          </div>
+        ))
       )}
 
-      {/* Typography Overlay */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
-          className="space-y-4"
-        >
-          <h1
-            className={`text-4xl font-bold uppercase tracking-wider md:text-6xl lg:text-7xl xl:text-8xl transition-colors duration-300 ${
-              uiStyle === 'light' ? 'text-white' : 'text-black'
-            }`}
-          >
-            {siteConfig.title}
-          </h1>
-          <p
-            className={`text-sm uppercase tracking-widest md:text-base transition-colors duration-300 ${
-              uiStyle === 'light' ? 'text-white/90' : 'text-black/90'
-            }`}
-          >
+      {/* Overlay with Typography */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 px-6">
+        <div className="max-w-5xl text-center text-white">
+          <p className="mb-5 text-xs uppercase tracking-[0.5em] text-white/80 md:text-sm">
             {siteConfig.subtitle}
           </p>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1, ease: [0.4, 0, 0.2, 1] }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className={`h-8 w-px transition-colors duration-300 ${
-              uiStyle === 'light' ? 'bg-white/60' : 'bg-black/60'
-            }`}
-          />
-        </motion.div>
+          <h1 className="mb-6 text-4xl font-bold uppercase tracking-wider md:text-6xl lg:text-7xl xl:text-8xl">
+            {siteConfig.title}
+          </h1>
+          <p className="mx-auto max-w-xl text-sm font-light leading-relaxed tracking-wide text-white/85 md:text-base lg:text-lg">
+            Precision cuts, organic products, and editorial hair work from the heart of Ghent.
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href={siteConfig.booking.salonkeeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-12 items-center justify-center bg-white px-7 text-xs font-semibold uppercase tracking-[0.25em] text-black transition-colors hover:bg-white/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              {siteConfig.booking.label}
+            </Link>
+            <Link
+              href="/editorial"
+              className="inline-flex min-h-12 items-center justify-center border border-white/50 px-7 text-xs font-semibold uppercase tracking-[0.25em] text-white transition-colors hover:border-white hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              View editorial work
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* Image Indicators */}
-      <div className="absolute bottom-8 right-8 z-10 flex space-x-2">
-        {heroImages.map((_, index) => {
-          const isActive = index === currentImageIndex
-          const isLight = uiStyle === 'light'
-          return (
+      {/* Image Indicators (Dots) */}
+      {!shouldUseHeroVideo && (
+        <div className="absolute bottom-24 left-1/2 flex -translate-x-1/2 gap-2">
+          {heroImages.map((_, index) => (
             <button
               key={index}
-              onClick={() => handleImageSelect(index)}
-              className={`h-1.5 transition-all duration-300 ${
-                isActive
-                  ? `w-8 ${isLight ? 'bg-white' : 'bg-black'}`
-                  : `w-1.5 ${isLight ? 'bg-white/40 hover:bg-white/60' : 'bg-black/40 hover:bg-black/60'}`
+              onClick={() => handleDotClick(index)}
+              className={`h-2 w-2 rounded-full transition-all ${
+                index === currentIndex ? 'bg-white' : 'bg-white/50'
               }`}
               aria-label={`Go to image ${index + 1}`}
-              tabIndex={0}
             />
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {/* Scroll Indicator */}
+      <button
+        onClick={scrollToNext}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 transition-colors hover:text-white"
+        aria-label="Scroll to next section"
+      >
+        <ChevronDown className="h-6 w-6 animate-bounce" />
+      </button>
     </section>
   )
 }
-

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider'
 import { UiStyleProvider } from '@/components/providers/UiStyleProvider'
 import { Navigation } from '@/components/ui/Navigation'
+import { FooterSection } from '@/components/sections/FooterSection'
 import { siteConfig } from '@/config/site'
 import './globals.css'
 
@@ -34,10 +35,10 @@ export default function RootLayout({
           <SmoothScrollProvider>
             <Navigation />
             {children}
+            <FooterSection />
           </SmoothScrollProvider>
         </UiStyleProvider>
       </body>
     </html>
   )
 }
-

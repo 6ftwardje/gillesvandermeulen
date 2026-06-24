@@ -13,6 +13,16 @@ export interface SeriesData {
   images: ImageData[]
 }
 
+export interface EditorialVolume {
+  slug: string
+  title: string
+  year: string
+  kicker: string
+  description: string
+  coverImage: ImageData
+  images: ImageData[]
+}
+
 export interface PriceItem {
   name: string
   price: string
@@ -29,6 +39,19 @@ export interface SiteConfig {
   name: string
   title: string
   subtitle: string
+  businessNumber: string
+  media: {
+    heroVideo: {
+      playbackId: string
+      mp4Url: string
+      posterTime: string
+      maxResolution: string
+    }
+  }
+  booking: {
+    salonkeeUrl: string
+    label: string
+  }
   address: {
     street: string
     city: string
@@ -41,8 +64,6 @@ export interface SiteConfig {
     keywords?: string[]
   }
 }
-
-
 
 
 

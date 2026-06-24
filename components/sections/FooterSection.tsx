@@ -7,7 +7,7 @@ export const FooterSection = () => {
   return (
     <footer className="border-t border-grey-medium py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="flex flex-col items-center justify-between space-y-6 text-center md:flex-row md:space-y-0">
+        <div className="flex flex-col items-center justify-between gap-8 text-center md:flex-row md:text-left">
           <div className="space-y-2">
             <p className="text-sm font-bold uppercase tracking-wider">
               {siteConfig.name}
@@ -15,24 +15,33 @@ export const FooterSection = () => {
             <p className="text-xs text-gray-500">
               {siteConfig.address.street}, {siteConfig.address.city}
             </p>
+            <p className="text-xs text-gray-500">
+              {siteConfig.businessNumber}
+            </p>
           </div>
-          {siteConfig.social.instagram && (
-            <Link
-              href={siteConfig.social.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs uppercase tracking-wider text-gray-600 transition-colors hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
-              aria-label="Visit Instagram profile"
-              tabIndex={0}
-            >
-              Instagram
-            </Link>
-          )}
+          <div className="flex flex-col items-center gap-3 md:items-end">
+            {siteConfig.social.instagram && (
+              <Link
+                href={siteConfig.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs uppercase tracking-wider text-gray-600 transition-colors hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                aria-label="Visit Instagram profile"
+                tabIndex={0}
+              >
+                Instagram
+              </Link>
+            )}
+            <p className="text-xs text-gray-400">
+              © {new Date().getFullYear()} {siteConfig.name}
+            </p>
+          </div>
         </div>
       </div>
     </footer>
   )
 }
+
 
 
 

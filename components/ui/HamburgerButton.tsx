@@ -18,7 +18,7 @@ export function HamburgerButton({ isOpen, toggle }: HamburgerButtonProps) {
       onClick={toggle}
       aria-label={isOpen ? "Close menu" : "Open menu"}
       aria-expanded={isOpen}
-      className="relative z-50 w-8 h-8 flex items-center justify-center"
+      className="relative z-50 flex h-8 w-8 items-center justify-center"
     >
       <motion.span
         className="absolute h-[2px] w-6 transition-colors duration-300"
@@ -41,4 +41,3 @@ export function HamburgerButton({ isOpen, toggle }: HamburgerButtonProps) {
     </button>
   );
 }
-
