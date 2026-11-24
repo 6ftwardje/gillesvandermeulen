@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import type Hls from 'hls.js'
 import { ChevronDown, Instagram } from 'lucide-react'
 import { heroImages, siteConfig } from '@/config/site'
 
@@ -11,15 +12,16 @@ const secondaryActionClassName = 'inline-flex min-h-12 items-center justify-cent
 export const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isMobileHeroVideoViewport, setIsMobileHeroVideoViewport] = useState(false)
-  const heroVideo = siteConfig.media.heroVideo
-  const hasHeroVideo = Boolean(heroVideo.playbackId)
-  const shouldUseHeroVideo = hasHeroVideo && isMobileHeroVideoViewport
-  const muxStreamUrl = hasHeroVideo
-    ? `https://stream.mux.com/${heroVideo.playbackId}.m3u8`
-    : ''
-  const muxPosterUrl = hasHeroVideo
-    ? `https://image.mux.com/${heroVideo.playbackId}/thumbnail.webp?time=${heroVideo.posterTime}`
-    : ''
+  const [heroVideoFailed, setHeroVideoFailed] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const { playbackId, mp4Url, posterTime, maxResolution } = siteConfig.media.heroVideo
+  const shouldUseHeroVideo = Boolean(playbackId || mp4Url) && isMobileHeroVideoViewport && !heroVideoFailed
+  const muxStreamUrl = playbackId
+    ? `https://stream.mux.com/${playbackId}.m3u8?max_resolution=${encodeURIComponent(maxResolution)}`
+    : undefined
+  const muxPosterUrl = playbackId
+    ? `https://image.mux.com/${playbackId}/thumbnail.webp?time=${posterTime}`
+    : undefined
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 767px)')
@@ -30,6 +32,95 @@ export const HeroSection = () => {
 
     return () => mediaQuery.removeEventListener('change', updateViewport)
   }, [])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!shouldUseHeroVideo || !video) {
+      return
+    }
+
+    let active = true
+    let hls: Hls | undefined
+    let usingMp4 = Boolean(mp4Url)
+
+    const showHeroImages = () => {
+      if (active) setHeroVideoFailed(true)
+    }
+
+    const loadStream = async () => {
+      if (!muxStreamUrl) {
+        showHeroImages()
+        return
+      }
+
+      const canPlayNativeHls = video.canPlayType('application/vnd.apple.mpegurl')
+      // Prefer native HLS on modern Safari. Chromium can report support without playing the stream.
+      if (canPlayNativeHls && 'ManagedMediaSource' in window) {
+        video.src = muxStreamUrl
+        return
+      }
+
+      try {
+        const { default: Hls } = await import('hls.js')
+        if (!active) return
+
+        if (Hls.isSupported()) {
+          hls = new Hls()
+          hls.on(Hls.Events.ERROR, (_, { fatal }) => {
+            if (fatal) showHeroImages()
+          })
+          hls.loadSource(muxStreamUrl)
+          hls.attachMedia(video)
+          return
+        }
+      } catch {
+        if (!active) return
+      }
+
+      if (canPlayNativeHls) {
+        video.src = muxStreamUrl
+      } else {
+        showHeroImages()
+      }
+    }
+
+    const handleMediaError = () => {
+      if (usingMp4) {
+        usingMp4 = false
+        void loadStream()
+      } else {
+        showHeroImages()
+      }
+    }
+
+    const startPlayback = () => {
+      if (!video.paused) return
+
+      void video.play().catch((error) => {
+        if (error.name === 'NotAllowedError') showHeroImages()
+      })
+    }
+
+    video.defaultMuted = true
+    video.muted = true
+    video.addEventListener('canplay', startPlayback)
+    video.addEventListener('error', handleMediaError)
+
+    if (mp4Url) {
+      video.src = mp4Url
+    } else {
+      void loadStream()
+    }
+
+    return () => {
+      active = false
+      video.removeEventListener('canplay', startPlayback)
+      video.removeEventListener('error', handleMediaError)
+      hls?.destroy()
+      video.removeAttribute('src')
+      video.load()
+    }
+  }, [mp4Url, muxStreamUrl, shouldUseHeroVideo])
 
   useEffect(() => {
     if (shouldUseHeroVideo) {
@@ -59,7 +150,7 @@ export const HeroSection = () => {
       {/* Background media */}
       {shouldUseHeroVideo ? (
         <video
-          key={heroVideo.playbackId}
+          ref={videoRef}
           autoPlay
           muted
           loop
@@ -68,10 +159,7 @@ export const HeroSection = () => {
           poster={muxPosterUrl}
           className="absolute inset-0 h-full w-full object-cover"
           aria-label="Gilles Vandermeulen hero background video"
-        >
-          {heroVideo.mp4Url && <source src={heroVideo.mp4Url} type="video/mp4" />}
-          <source src={muxStreamUrl} type="application/x-mpegURL" />
-        </video>
+        />
       ) : (
         heroImages.map((image, index) => (
           <div
