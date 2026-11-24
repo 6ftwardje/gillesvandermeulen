@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronDown } from 'lucide-react'
-import { heroImages } from '@/config/site'
-import { siteConfig } from '@/config/site'
+import { ChevronDown, Instagram } from 'lucide-react'
+import { heroImages, siteConfig } from '@/config/site'
+
+const secondaryActionClassName = 'inline-flex min-h-12 items-center justify-center gap-2 border border-white/50 px-7 text-xs font-semibold uppercase tracking-[0.25em] text-white transition-colors hover:border-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black'
 
 export const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -104,7 +105,7 @@ export const HeroSection = () => {
           <p className="mx-auto max-w-xl text-sm font-light leading-relaxed tracking-wide text-white/85 md:text-base lg:text-lg">
             Precision cuts, organic products, and editorial hair work from the heart of Ghent.
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 md:mt-10 md:flex-row md:flex-wrap md:gap-4">
             <Link
               href={siteConfig.booking.salonkeeUrl}
               target="_blank"
@@ -115,17 +116,28 @@ export const HeroSection = () => {
             </Link>
             <Link
               href="/editorial"
-              className="inline-flex min-h-12 items-center justify-center border border-white/50 px-7 text-xs font-semibold uppercase tracking-[0.25em] text-white transition-colors hover:border-white hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              className={`${secondaryActionClassName} hover:bg-white/10`}
             >
               View editorial work
             </Link>
+            {siteConfig.social.instagram && (
+              <Link
+                href={siteConfig.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${secondaryActionClassName} bg-black/50 hover:bg-black/70`}
+              >
+                <Instagram aria-hidden="true" className="h-4 w-4" />
+                Instagram
+              </Link>
+            )}
           </div>
         </div>
       </div>
 
       {/* Image Indicators (Dots) */}
       {!shouldUseHeroVideo && (
-        <div className="absolute bottom-24 left-1/2 flex -translate-x-1/2 gap-2">
+        <div className="absolute bottom-16 left-1/2 flex -translate-x-1/2 gap-2 md:bottom-24">
           {heroImages.map((_, index) => (
             <button
               key={index}
